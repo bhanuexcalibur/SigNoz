@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SigNoz x Bhanu Kumar &middot; Proof of Work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --bg:       #080a0d;
+  --bg2:      #0d1117;
+  --bg3:      #111820;
+  --bg4:      #161f2a;
+  --bg5:      #1d2735;
+  --bdr:      rgba(255,255,255,0.055);
+  --bmd:      rgba(255,255,255,0.11);
+  --blg:      rgba(255,255,255,0.2);
+  --t1:       #e8edf2;
+  --t2:       #8a95a3;
+  --t3:       #455060;
+  --snz:      #e8532a;
+  --snz-dim:  rgba(232,83,42,0.1);
+  --snz-glow: rgba(232,83,42,0.18);
+  --snz-t:    #f47a57;
+  --grn:      #34d399;
+  --grn-dim:  rgba(52,211,153,0.09);
+  --grn-t:    #6ee7b7;
+  --blu:      #60a5fa;
+  --blu-dim:  rgba(96,165,250,0.09);
+  --red:      #f87171;
+  --red-dim:  rgba(248,113,113,0.09);
+  --amb:      #fbbf24;
+  --amb-dim:  rgba(251,191,36,0.09);
+  --purple:   #a78bfa;
+  --pur-dim:  rgba(167,139,250,0.09);
+}
+
+html{scroll-behavior:smooth;scroll-padding-top:58px;}
+body{
+  background:var(--bg);color:var(--t1);
+  font-family:'Figtree',system-ui,sans-serif;
+  font-size:16px;line-height:1.72;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+
+/* --- NOISE TEXTURE OVERLAY --- */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.028'/%3E%3C/svg%3E");
+  opacity:1;
+}
+
+/* --- GRID LINES BG --- */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(232,83,42,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(232,83,42,0.02) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+
+/* ===== NAV ===== */
+.nav{
+  position:sticky;top:0;z-index:300;
+  background:rgba(8,10,13,0.94);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--bdr);
+  padding:0 5vw;
+}
+.nav-i{
+  max-width:1200px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:58px;gap:16px;
+}
+.nav-left{
+  display:flex;align-items:center;gap:20px;flex-shrink:0;
+}
+.nav-brand{
+  font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+  color:var(--t1);letter-spacing:0.05em;white-space:nowrap;
+  display:flex;align-items:center;gap:6px;
+}
+.nav-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--snz);
+  animation:pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.7);}}
+.nav-divider{width:1px;height:20px;background:var(--bdr);}
+.nav-links{display:flex;gap:2px;flex-wrap:wrap;}
+.np{
+  font-size:12px;font-weight:500;
+  padding:5px 13px;border-radius:6px;
+  border:1px solid transparent;
+  color:var(--t2);background:transparent;
+  text-decoration:none;transition:all 0.13s;white-space:nowrap;
+  font-family:'IBM Plex Mono',monospace;letter-spacing:0.02em;
+}
+.np:hover{border-color:var(--bdr);color:var(--t1);background:var(--bg3);}
+.np.active{color:var(--snz-t);}
+.np.cta{
+  background:var(--snz);border-color:var(--snz);
+  color:#fff;font-weight:600;margin-left:6px;
+}
+.np.cta:hover{opacity:0.88;}
+
+.hbg{
+  display:none;flex-direction:column;gap:5px;
+  cursor:pointer;background:none;border:none;padding:4px;flex-shrink:0;
+}
+.hbg span{
+  display:block;width:20px;height:1.5px;
+  background:var(--t1);border-radius:2px;
+  transition:transform .3s,opacity .3s;
+}
+.hbg.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.hbg.open span:nth-child(2){opacity:0;}
+.hbg.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+
+.mob-menu{
+  display:none;position:fixed;inset:0;top:58px;
+  background:var(--bg);z-index:290;
+  flex-direction:column;padding:28px 5vw;gap:0;
+  border-top:1px solid var(--bdr);
+}
+.mob-menu.open{display:flex;}
+.mob-menu a{
+  display:block;font-size:18px;
+  font-family:'Fraunces',serif;font-style:italic;font-weight:300;
+  color:var(--t1);text-decoration:none;
+  padding:16px 0;border-bottom:1px solid var(--bdr);
+}
+.mob-menu a:last-child{border-bottom:none;}
+.mob-menu a.mcta{color:var(--snz);}
+
+@media(max-width:780px){
+  .nav-links{display:none;}
+  .hbg{display:flex;}
+}
+
+/* ===== WRAPPER ===== */
+.wrap{max-width:1200px;margin:0 auto;padding:0 5vw;position:relative;z-index:1;}
+section{padding:80px 0;border-bottom:1px solid var(--bdr);}
+
+/* ===== REVEAL ===== */
+.rv{opacity:0;transform:translateY(16px);transition:opacity 0.5s ease,transform 0.5s ease;}
+.rv.in{opacity:1;transform:none;}
+
+/* ===== HERO ===== */
+.hero{
+  padding:96px 5vw 80px;
+  max-width:1200px;margin:0 auto;
+  position:relative;z-index:1;
+  border-bottom:1px solid var(--bdr);
+}
+
+/* terminal window header */
+.terminal-bar{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--bg3);border:1px solid var(--bdr);
+  border-radius:8px 8px 0 0;padding:8px 14px;
+  margin-bottom:0;
+}
+.t-dot{width:10px;height:10px;border-radius:50%;}
+.t-dot.red{background:#ff5f57;}
+.t-dot.yel{background:#ffbd2e;}
+.t-dot.grn{background:#28c840;}
+.t-label{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--t3);letter-spacing:0.06em;margin-left:8px;
+}
+.terminal-body{
+  background:var(--bg3);border:1px solid var(--bdr);border-top:none;
+  border-radius:0 0 8px 8px;padding:16px 20px;
+  margin-bottom:36px;font-family:'IBM Plex Mono',monospace;
+  font-size:13px;line-height:1.9;
+}
+.prompt{color:var(--snz);}
+.cmd{color:var(--t1);}
+.output-line{color:var(--t2);}
+.output-hl{color:var(--snz-t);}
+.cursor{
+  display:inline-block;width:8px;height:14px;
+  background:var(--snz);vertical-align:-2px;
+  animation:blink-cur 1.1s step-end infinite;
+}
+@keyframes blink-cur{0%,100%{opacity:1;}50%{opacity:0;}}
+
+.hero-hed{
+  font-family:'Fraunces',serif;font-weight:300;font-style:italic;
+  font-size:clamp(44px,7.5vw,96px);
+  line-height:0.95;letter-spacing:-0.02em;
+  color:var(--t1);margin-bottom:22px;
+}
+.hero-hed .hl{color:var(--snz);}
+.hero-hed .ghost{
+  color:var(--t2);
+}
+
+.hero-sub{
+  font-size:clamp(15px,1.8vw,18px);color:var(--t2);
+  max-width:580px;line-height:1.82;margin-bottom:44px;
+  font-weight:300;
+}
+.hero-sub strong{color:var(--t1);font-weight:500;}
+
+.hero-meta{
+  display:flex;justify-content:space-between;
+  align-items:flex-end;flex-wrap:wrap;gap:20px;
+  padding-top:32px;border-top:1px solid var(--bdr);
+}
+.hmeta-left{font-size:14px;color:var(--t2);line-height:2;}
+.hmeta-left strong{display:block;font-size:15px;color:var(--t1);font-weight:500;}
+.hmeta-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.toc-row{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--t3);text-decoration:none;letter-spacing:0.04em;
+  transition:color 0.14s;line-height:2;
+  border-right:2px solid var(--snz);padding-right:12px;
+}
+.toc-row:hover{color:var(--t2);}
+
+/* ===== SECTION LABEL ===== */
+.sec-label{
+  display:flex;align-items:center;gap:14px;margin-bottom:48px;
+}
+.sec-num{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--snz-t);background:var(--snz-dim);
+  border:1px solid rgba(232,83,42,0.22);
+  border-radius:4px;padding:3px 10px;white-space:nowrap;
+}
+.sec-title{
+  font-size:11px;font-weight:500;letter-spacing:0.14em;
+  text-transform:uppercase;color:var(--t3);
+  font-family:'IBM Plex Mono',monospace;
+}
+
+/* ===== SIGNAL STATS ===== */
+.signal-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:1px;background:var(--bdr);
+  border:1px solid var(--bdr);border-radius:10px;overflow:hidden;
+  margin-bottom:52px;
+}
+.sig-stat{
+  background:var(--bg2);padding:26px 22px;
+}
+.sig-val{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:300;
+  font-size:clamp(26px,4vw,44px);color:var(--snz);
+  line-height:1;margin-bottom:8px;
+}
+.sig-lab{font-size:13px;color:var(--t3);line-height:1.55;}
+.sig-lab strong{display:block;color:var(--t2);font-weight:500;margin-top:2px;}
+@media(max-width:660px){.signal-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:380px){.signal-grid{grid-template-columns:1fr;}}
+
+/* ===== AUDIT SECTION ===== */
+.audit-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:28px;}
+.atab{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;
+  font-weight:500;padding:6px 16px;border-radius:6px;
+  border:1px solid var(--bdr);color:var(--t2);
+  background:transparent;cursor:pointer;transition:all 0.13s;
+  letter-spacing:0.02em;
+}
+.atab:hover{border-color:var(--bmd);color:var(--t1);}
+.atab.on{background:var(--snz);border-color:var(--snz);color:#fff;font-weight:600;}
+
+.apanel{display:none;}
+.apanel.on{display:block;}
+
+.audit-block{
+  background:var(--bg2);border:1px solid var(--bdr);
+  border-radius:10px;overflow:hidden;margin-bottom:12px;
+}
+.audit-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--bdr);
+  flex-wrap:wrap;gap:10px;
+}
+.audit-hed-title{
+  font-size:14px;font-weight:500;color:var(--t1);
+  font-family:'Figtree',sans-serif;
+}
+.badge{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:0.08em;text-transform:uppercase;
+  padding:3px 10px;border-radius:4px;white-space:nowrap;
+}
+.b-gap{background:var(--red-dim);color:var(--red);}
+.b-ok{background:var(--grn-dim);color:var(--grn);}
+.b-opp{background:var(--amb-dim);color:var(--amb);}
+.b-fix{background:var(--blu-dim);color:var(--blu);}
+.b-miss{background:var(--pur-dim);color:var(--purple);}
+
+.audit-row{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-bottom:1px solid var(--bdr);
+}
+.audit-row:last-child{border-bottom:none;}
+.audit-cell{
+  padding:16px 22px;font-size:14px;
+  line-height:1.65;color:var(--t2);
+}
+.audit-cell:first-child{border-right:1px solid var(--bdr);}
+.audit-cell strong{
+  display:block;font-size:10px;font-weight:600;
+  font-family:'IBM Plex Mono',monospace;letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--t3);margin-bottom:5px;
+}
+@media(max-width:640px){
+  .audit-row{grid-template-columns:1fr;}
+  .audit-cell:first-child{border-right:none;border-bottom:1px solid var(--bdr);}
+}
+
+/* ===== BUYER MATRIX ===== */
+.buyer-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;margin-bottom:28px;
+}
+.btab{
+  background:var(--bg2);border:1px solid var(--bdr);
+  border-radius:10px;padding:20px;cursor:pointer;
+  transition:all 0.15s;
+}
+.btab:hover{border-color:var(--bmd);}
+.btab.on{border-color:var(--snz);background:var(--snz-dim);}
+.btab-role{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:7px;
+}
+.btab.on .btab-role{color:var(--snz-t);}
+.btab-name{font-size:14px;font-weight:500;color:var(--t1);}
+.btab-hint{font-size:12px;color:var(--t2);margin-top:4px;line-height:1.5;}
+@media(max-width:600px){.buyer-grid{grid-template-columns:1fr;}}
+
+.buyer-out{
+  background:var(--bg2);border:1px solid var(--bdr);
+  border-radius:10px;overflow:hidden;
+}
+.buyer-idle{
+  padding:40px;text-align:center;
+  font-family:'IBM Plex Mono',monospace;font-size:12px;
+  color:var(--t3);letter-spacing:0.04em;
+}
+.buyer-content{display:none;padding:30px;}
+.buyer-content.on{display:block;}
+.bc-role{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--snz-t);margin-bottom:14px;display:block;
+}
+.bc-hed{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:300;
+  font-size:clamp(18px,2.4vw,24px);color:var(--t1);
+  line-height:1.3;margin-bottom:18px;
+}
+.bc-body{font-size:15px;color:var(--t2);line-height:1.78;}
+.bc-body strong{color:var(--t1);font-weight:500;}
+
+/* ===== GTM BRIEF ===== */
+.brief-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+@media(max-width:640px){.brief-grid{grid-template-columns:1fr;}}
+.bcard{
+  background:var(--bg2);border:1px solid var(--bdr);
+  border-radius:10px;padding:26px;
+}
+.bcard.full{grid-column:1/-1;}
+.bcard.accent{border-color:rgba(232,83,42,0.25);background:rgba(232,83,42,0.05);}
+.bcard-label{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:12px;display:block;
+}
+.bcard.accent .bcard-label{color:var(--snz-t);}
+.bcard h4{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:300;
+  font-size:19px;color:var(--t1);margin-bottom:12px;line-height:1.3;
+}
+.bcard p{font-size:14px;color:var(--t2);line-height:1.72;}
+.bcard p strong{color:var(--t1);font-weight:500;}
+.bcard ul{padding-left:18px;font-size:14px;color:var(--t2);line-height:2;}
+.bcard ul li strong{color:var(--t1);font-weight:500;}
+
+/* ===== COPY EXAMPLES ===== */
+.copy-block{
+  background:var(--bg2);border:1px solid var(--bdr);
+  border-radius:10px;overflow:hidden;margin-bottom:12px;
+}
+.copy-top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 22px;border-bottom:1px solid var(--bdr);
+  flex-wrap:wrap;gap:10px;
+}
+.copy-ch{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--t3);letter-spacing:0.05em;
+}
+.copy-body{padding:22px;}
+.copy-hed{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:300;
+  font-size:clamp(16px,2.2vw,21px);color:var(--t1);
+  line-height:1.35;margin-bottom:14px;
+}
+.copy-txt{font-size:14px;color:var(--t2);line-height:1.78;margin-bottom:14px;}
+.copy-why{
+  font-size:12px;color:var(--t3);line-height:1.68;
+  padding:14px 16px;background:var(--bg3);border-radius:6px;
+  border-left:2px solid rgba(232,83,42,0.3);
+}
+.copy-why strong{color:var(--t2);}
+
+/* ===== BATTLE CARD ===== */
+.battle-header{
+  display:flex;align-items:center;gap:10px;
+  flex-wrap:wrap;margin-bottom:28px;
+}
+.battle-vs{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--t3);letter-spacing:0.06em;padding:4px 10px;
+  border:1px solid var(--bdr);border-radius:4px;
+}
+
+.battle-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:12px;margin-bottom:12px;
+}
+@media(max-width:600px){.battle-grid{grid-template-columns:1fr;}}
+
+.battle-card{
+  background:var(--bg2);border:1px solid var(--bdr);
+  border-radius:10px;padding:22px;
+}
+.bc-vs-tag{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:12px;display:block;
+}
+.bc-vs-tag.snz-color{color:var(--snz-t);}
+.bc-vs-tag.comp-color{color:var(--red);}
+.bc-vs-tag.dd{color:#632ca6;}
+.battle-card .bc-vs-tag.dd{color:#9b59d4;}
+
+.battle-row{
+  display:flex;flex-direction:column;gap:10px;
+}
+.battle-item{
+  font-size:13px;color:var(--t2);line-height:1.6;
+  padding:10px 12px;background:var(--bg3);
+  border-radius:6px;
+  border-left:2px solid var(--bdr);
+}
+.battle-item.win{border-left-color:var(--grn);}
+.battle-item.lose{border-left-color:var(--red);}
+.battle-item strong{color:var(--t1);font-weight:500;display:block;margin-bottom:2px;font-size:12px;}
+
+.battle-talk{
+  background:var(--bg2);border:1px solid var(--bdr);
+  border-radius:10px;padding:22px;
+}
+.bt-label{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--snz-t);margin-bottom:14px;display:block;
+}
+.bt-scenario{
+  font-size:14px;font-weight:500;color:var(--t1);
+  margin-bottom:10px;
+}
+.bt-response{font-size:14px;color:var(--t2);line-height:1.72;margin-bottom:12px;}
+.bt-response strong{color:var(--t1);font-weight:500;}
+
+/* ===== WORK GRID ===== */
+.wgrid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+}
+@media(max-width:720px){.wgrid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:460px){.wgrid{grid-template-columns:1fr;}}
+.wcard{
+  background:var(--bg2);border:1px solid var(--bdr);
+  border-radius:10px;padding:22px;
+  text-decoration:none;display:flex;flex-direction:column;
+  transition:all 0.15s;
+}
+.wcard:hover{border-color:var(--bmd);transform:translateY(-2px);}
+.wcard-tag{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:11px;display:block;
+}
+.wcard h4{font-size:15px;font-weight:500;color:var(--t1);margin-bottom:9px;line-height:1.4;}
+.wcard p{font-size:13px;color:var(--t2);line-height:1.65;flex:1;}
+.wcard-arr{margin-top:16px;font-size:16px;color:var(--snz);font-family:'IBM Plex Mono',monospace;}
+
+/* ===== SIGNATURE ===== */
+.sig{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:56px 0;flex-wrap:wrap;gap:24px;
+}
+.sig-name{
+  font-family:'Fraunces',serif;font-style:italic;font-weight:300;
+  font-size:clamp(28px,5vw,52px);color:var(--t1);
+  line-height:1;margin-bottom:12px;
+}
+.sig-name span{color:var(--snz);}
+.sig-links{font-size:14px;color:var(--t2);line-height:2.2;}
+.sig-links a{color:var(--t2);text-decoration:none;transition:color 0.13s;}
+.sig-links a:hover{color:var(--t1);}
+.sig-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.sbtn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:14px;font-weight:500;padding:10px 22px;
+  border-radius:8px;text-decoration:none;transition:all 0.13s;
+  font-family:'IBM Plex Mono',monospace;letter-spacing:0.02em;
+}
+.sbtn.pri{background:var(--snz);color:#fff;}
+.sbtn.pri:hover{opacity:0.88;}
+.sbtn.ghost{
+  background:transparent;border:1px solid var(--bmd);color:var(--t2);
+}
+.sbtn.ghost:hover{border-color:var(--blg);color:var(--t1);}
+
+/* ===== INTERACTIVE PROGRESS ===== */
+.progress-steps{
+  display:flex;flex-direction:column;gap:0;
+  border:1px solid var(--bdr);border-radius:10px;overflow:hidden;
+}
+.prog-step{
+  border-bottom:1px solid var(--bdr);cursor:pointer;
+  transition:background 0.15s;
+}
+.prog-step:last-child{border-bottom:none;}
+.prog-step-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;
+}
+.prog-step-head:hover{background:var(--bg3);}
+.ps-left{display:flex;align-items:center;gap:14px;}
+.ps-num{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--snz-t);width:24px;flex-shrink:0;
+}
+.ps-title{font-size:14px;font-weight:500;color:var(--t1);}
+.ps-timeline{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;
+  color:var(--t3);white-space:nowrap;
+}
+.ps-chevron{
+  font-size:16px;color:var(--t3);
+  transition:transform 0.25s;margin-left:12px;
+}
+.prog-step.open .ps-chevron{transform:rotate(180deg);}
+.prog-step-body{
+  display:none;padding:0 22px 22px 60px;
+  font-size:14px;color:var(--t2);line-height:1.72;
+}
+.prog-step.open .prog-step-body{display:block;}
+.prog-step-body ul{padding-left:16px;margin-top:8px;}
+.prog-step-body ul li{margin-bottom:6px;}
+.prog-step-body strong{color:var(--t1);font-weight:500;}
+
+/* ===== FUNNEL VIZ ===== */
+.funnel-wrap{
+  background:var(--bg2);border:1px solid var(--bdr);
+  border-radius:10px;padding:28px;
+  margin-bottom:12px;
+}
+.funnel-label{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:20px;display:block;
+}
+.funnel-row{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:10px;
+}
+.funnel-bar-wrap{flex:1;}
+.funnel-bar-label{
+  font-size:13px;color:var(--t2);margin-bottom:6px;
+  display:flex;justify-content:space-between;
+}
+.funnel-bar-label span{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--t3);
+}
+.funnel-bar-track{
+  height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;
+}
+.funnel-bar-fill{
+  height:100%;border-radius:4px;
+  background:var(--snz);
+  transition:width 1.1s cubic-bezier(0.16,1,0.3,1);
+}
+.funnelrow-icon{
+  width:36px;height:36px;border-radius:8px;
+  background:var(--bg3);border:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+
+/* ===== UTIL ===== */
+.mono{font-family:'IBM Plex Mono',monospace;}
+.snz-text{color:var(--snz-t);}
+.grn-text{color:var(--grn-t);}
+.divider{height:1px;background:var(--bdr);margin:48px 0;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-i">
+    <div class="nav-left">
+      <div class="nav-brand">
+        <span class="nav-dot"></span>
+        <span>bhanu.kumar</span>
+        <span style="color:var(--t3);margin:0 6px;">/</span>
+        <span style="color:var(--snz-t);">signoz</span>
+      </div>
+      <div class="nav-divider"></div>
+      <nav class="nav-links">
+        <a class="np active" href="#audit">Messaging</a>
+        <a class="np" href="#positioning">Positioning</a>
+        <a class="np" href="#gtm">GTM</a>
+        <a class="np" href="#battlecard">Battle Card</a>
+        <a class="np" href="#copy">Copy</a>
+        <a class="np" href="#work">More Work</a>
+      </nav>
+    </div>
+    <a class="np cta" href="mailto:bhanukumar0902@gmail.com">Get in touch</a>
+    <button class="hbg" id="hbg" onclick="toggleMob()" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobm">
+  <a href="#audit" onclick="closeMob()">Messaging Audit</a>
+  <a href="#positioning" onclick="closeMob()">Positioning</a>
+  <a href="#gtm" onclick="closeMob()">GTM Brief</a>
+  <a href="#battlecard" onclick="closeMob()">Battle Card</a>
+  <a href="#copy" onclick="closeMob()">Copy Examples</a>
+  <a href="#work" onclick="closeMob()">More Work</a>
+  <a class="mcta" href="mailto:bhanukumar0902@gmail.com" onclick="closeMob()">Get in touch &rarr;</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="terminal-bar rv">
+    <span class="t-dot red"></span>
+    <span class="t-dot yel"></span>
+    <span class="t-dot grn"></span>
+    <span class="t-label">pow-signoz &mdash; proof_of_work.md</span>
+  </div>
+  <div class="terminal-body rv">
+    <div><span class="prompt">$</span> <span class="cmd">whoami</span></div>
+    <div class="output-line"><span class="output-hl">Bhanu Kumar</span>, product marketer. This page is built specifically for SigNoz.</div>
+    <div style="height:8px;"></div>
+    <div><span class="prompt">$</span> <span class="cmd">ls -la what-you-will-find/</span></div>
+    <div class="output-line">&rarr; <span class="output-hl">messaging-audit.md</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; what's working, what isn't, and what to fix</div>
+    <div class="output-line">&rarr; <span class="output-hl">positioning-brief.md</span> &nbsp;&nbsp;&nbsp; SRE vs. Platform Eng vs. VP Eng, framed differently</div>
+    <div class="output-line">&rarr; <span class="output-hl">gtm-roadmap.md</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 90-day launch sequence, phased</div>
+    <div class="output-line">&rarr; <span class="output-hl">battle-card.md</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; vs. Datadog, with a real talk track</div>
+    <div class="output-line">&rarr; <span class="output-hl">copy-examples.md</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; homepage, LLM page, outbound email, blog <span class="cursor"></span></div>
+  </div>
+
+  <h1 class="hero-hed rv">
+    Observability<br>
+    is winning.<br>
+    <span class="hl">Let's make sure</span><br>
+    <span class="ghost">the story does too.</span>
+  </h1>
+  <p class="hero-sub rv">
+    SigNoz is technically strong, genuinely differentiated, and deeply loved by the developer community. The gap is that <strong>not enough people outside that community know it yet.</strong> This proof of work is an attempt to close that gap, starting with messaging, moving through GTM, and ending with copy and competitive tools that can actually ship.
+  </p>
+
+  <!-- Stats context label -->
+  <div class="rv" style="margin-bottom:14px;">
+    <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);">SigNoz at a glance &mdash; why this market is worth getting the story right</span>
+  </div>
+  <div class="signal-grid rv">
+    <div class="sig-stat">
+      <div class="sig-val">25K+</div>
+      <div class="sig-lab">GitHub stars on SigNoz's open-source repo<strong>One of the most-starred observability projects in the ecosystem</strong></div>
+    </div>
+    <div class="sig-stat">
+      <div class="sig-val">1,000+</div>
+      <div class="sig-lab">Engineering teams currently using SigNoz<strong>Including Sarvam.ai, Parallel.ai, and Omnicell</strong></div>
+    </div>
+    <div class="sig-stat">
+      <div class="sig-val">4-in-1</div>
+      <div class="sig-lab">Signal types in a single SigNoz backend<strong>Logs, metrics, traces, and LLM observability</strong></div>
+    </div>
+    <div class="sig-stat">
+      <div class="sig-val">OTel</div>
+      <div class="sig-lab">Built natively on OpenTelemetry from day one<strong>Not retrofitted like Datadog or New Relic</strong></div>
+    </div>
+  </div>
+  <div class="rv" style="margin-top:-28px;margin-bottom:44px;">
+    <p style="font-size:13px;color:var(--t3);font-family:'IBM Plex Mono',monospace;letter-spacing:0.02em;">All figures are SigNoz's own publicly stated numbers. The PMM job here is making sure the right people actually know them.</p>
+  </div>
+
+  <div class="hero-meta rv">
+    <div class="hmeta-left">
+      <strong>Bhanu Kumar</strong>
+      Product Marketing Manager
+      <a href="mailto:bhanukumar0902@gmail.com" style="color:var(--t2);text-decoration:none;">bhanukumar0902@gmail.com</a>
+    </div>
+    <div class="hmeta-right">
+      <a class="toc-row" href="#audit">01 / Messaging Audit</a>
+      <a class="toc-row" href="#positioning">02 / Positioning Brief</a>
+      <a class="toc-row" href="#gtm">03 / GTM Roadmap</a>
+      <a class="toc-row" href="#battlecard">04 / Battle Card</a>
+      <a class="toc-row" href="#copy">05 / Copy Examples</a>
+      <a class="toc-row" href="#work">06 / Other Work</a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 01: MESSAGING AUDIT ===== -->
+<section id="audit">
+  <div class="wrap">
+    <div class="sec-label rv">
+      <span class="sec-num">01</span>
+      <span class="sec-title">Messaging Audit</span>
+    </div>
+
+    <div class="audit-tabs rv">
+      <button class="atab on" onclick="swAudit('homepage',this)">Homepage</button>
+      <button class="atab" onclick="swAudit('hero',this)">Hero Copy</button>
+      <button class="atab" onclick="swAudit('competitor',this)">vs. Datadog Page</button>
+      <button class="atab" onclick="swAudit('llm',this)">LLM Observability</button>
+    </div>
+
+    <!-- Homepage -->
+    <div class="apanel on" id="ap-homepage">
+      <div class="audit-block rv">
+        <div class="audit-head">
+          <span class="audit-hed-title">Overall Homepage Structure</span>
+          <span class="badge b-opp">Opportunity</span>
+        </div>
+        <div class="audit-row">
+          <div class="audit-cell"><strong>What's Working</strong>The "one backend for logs, metrics, traces" framing is clean and positions SigNoz well against point solutions. The GitHub star count as social proof is smart. Usage-based pricing as a wedge against Datadog is a real differentiator.</div>
+          <div class="audit-cell"><strong>What's Missing</strong>The LLM observability capability is buried below the fold. Given where the developer market is heading, this should be a top-three message. There's no clear conversion path for the economic buyer (VP Eng, CTO) who lands on the page from a Datadog invoice complaint.</div>
+        </div>
+      </div>
+
+      <div class="audit-block rv">
+        <div class="audit-head">
+          <span class="audit-hed-title">Value Proposition Hierarchy</span>
+          <span class="badge b-gap">Gap</span>
+        </div>
+        <div class="audit-row">
+          <div class="audit-cell"><strong>Current State</strong>The current hierarchy leads with "open-source alternative to Datadog / New Relic." That's a fine anchor but it frames SigNoz as a follower, not a leader. You're defining yourself by what you're replacing rather than what you're building toward.</div>
+          <div class="audit-cell"><strong>Suggested Direction</strong>Lead with the OTel-native angle as a forward-looking bet: "Built for the observability standard that's winning." Datadog and New Relic claim OTel support but don't fully embrace it. SigNoz does. That's not a "we're cheaper" argument, it's a "we're on the right side of history" argument.</div>
+        </div>
+      </div>
+
+      <div class="audit-block rv">
+        <div class="audit-head">
+          <span class="audit-hed-title">Social Proof Placement</span>
+          <span class="badge b-ok">Working</span>
+        </div>
+        <div class="audit-row">
+          <div class="audit-cell"><strong>Current State</strong>GitHub stars are front and center. Trusted-by logos exist but could be more prominent. The customer quote (35% backend API response time improvement) is genuinely compelling and deserves more weight.</div>
+          <div class="audit-cell"><strong>Recommendation</strong>Pull that 35% stat up higher and attribute it properly. One specific, attributed outcome beats a logo grid. The Chatwoot case study on LLM observability is a great narrative waiting to be told more prominently.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Copy -->
+    <div class="apanel" id="ap-hero">
+      <div class="audit-block rv">
+        <div class="audit-head">
+          <span class="audit-hed-title">Hero Headline</span>
+          <span class="badge b-fix">Needs Work</span>
+        </div>
+        <div class="audit-row">
+          <div class="audit-cell"><strong>Current</strong>"Open-source observability for your stack" is accurate but not differentiated. Every observability vendor can claim something close to this. There's nothing in the headline that only SigNoz can say.</div>
+          <div class="audit-cell"><strong>Alternative Direction</strong>What only SigNoz can say: OTel-native from day one, not retrofitted. Your instrumentation is a company asset, not a vendor dependency. Consider: "Instrument once. Own it forever. No vendor lock-in." Or more editorial: "Observability that doesn't ask you to trust us with your data."</div>
+        </div>
+      </div>
+      <div class="audit-block rv">
+        <div class="audit-head">
+          <span class="audit-hed-title">Subheadline &amp; CTA</span>
+          <span class="badge b-opp">Opportunity</span>
+        </div>
+        <div class="audit-row">
+          <div class="audit-cell"><strong>Current State</strong>The sub-headline tends to relist features (logs, metrics, traces). The CTA is standard "Get Started" which works for the technical user but gives the economic buyer nothing to hold onto.</div>
+          <div class="audit-cell"><strong>Suggestion</strong>Add a secondary CTA path for the buyer doing a Datadog cost evaluation: something like "Calculate your savings vs. Datadog" or "See what teams on Datadog switched for." This is a real search intent that exists and SigNoz should own it.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Competitor page -->
+    <div class="apanel" id="ap-competitor">
+      <div class="audit-block rv">
+        <div class="audit-head">
+          <span class="audit-hed-title">vs. Datadog Comparison Page</span>
+          <span class="badge b-opp">Opportunity</span>
+        </div>
+        <div class="audit-row">
+          <div class="audit-cell"><strong>What's Working</strong>The OTel support comparison table is the strongest element. Pointing out that Datadog's own docs don't give a clear OTel starting point is a verifiable, credible claim that developers can check themselves. That builds trust faster than self-reported feature comparisons.</div>
+          <div class="audit-cell"><strong>What's Missing</strong>The page doesn't address the one question a VP Engineering asks before approving a switch: "What's the migration path?" There should be a clear section on switching cost, onboarding time, and what happens to existing instrumentation. The absence makes the switch feel riskier than it is.</div>
+        </div>
+      </div>
+      <div class="audit-block rv">
+        <div class="audit-head">
+          <span class="audit-hed-title">Pricing Narrative</span>
+          <span class="badge b-fix">Needs Strengthening</span>
+        </div>
+        <div class="audit-row">
+          <div class="audit-cell"><strong>Current</strong>The "9x more value" claim is on the page but isn't worked through. 9x more value than what, for whom, under what usage pattern? The claim lands weakly because it's not verified with a specific scenario.</div>
+          <div class="audit-cell"><strong>Suggested Fix</strong>Run a specific side-by-side scenario: "A team sending 50GB of logs/day, 2 million spans/day, and monitoring 30 hosts pays X on Datadog and Y on SigNoz." Show the math publicly. Specific numbers are more trusted than multiplier claims.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LLM -->
+    <div class="apanel" id="ap-llm">
+      <div class="audit-block rv">
+        <div class="audit-head">
+          <span class="audit-hed-title">LLM Observability Positioning</span>
+          <span class="badge b-miss">Underweighted</span>
+        </div>
+        <div class="audit-row">
+          <div class="audit-cell"><strong>The Opportunity</strong>SigNoz's LLM observability is genuinely differentiated: token-level tracing, per-model cost attribution, and inference pipeline metrics that correlate with the full infrastructure. LLM-only tools like LangSmith can't do the infrastructure correlation. Datadog and New Relic have retrofitted this. SigNoz built it natively through OTel.</div>
+          <div class="audit-cell"><strong>How to Tell That Story</strong>The Chatwoot story (where they explored OpenAI's native tracing, New Relic, and landed on SigNoz) is exactly the narrative the market needs to hear. It shows real evaluation criteria from a real team. Turn that into a case study, a blog post series, and a dedicated LLM observability landing page.</div>
+        </div>
+      </div>
+      <div class="audit-block rv">
+        <div class="audit-head">
+          <span class="audit-hed-title">AI-Era Messaging</span>
+          <span class="badge b-opp">Opportunity</span>
+        </div>
+        <div class="audit-row">
+          <div class="audit-cell"><strong>Current Gap</strong>The messaging doesn't yet distinguish between "observability for AI apps" and "AI-powered observability." These are different things. SigNoz does the former. Many competitors are adding the latter (AI-generated insights, anomaly detection). SigNoz should own the former before that distinction gets blurry.</div>
+          <div class="audit-cell"><strong>Frame to Adopt</strong>"Every team building on LLMs needs to see inside them. SigNoz is the only OTel-native platform where that visibility lives next to your traces, logs, and metrics, because your LLM isn't separate from your infrastructure. Neither should your observability be."</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 02: POSITIONING ===== -->
+<section id="positioning">
+  <div class="wrap">
+    <div class="sec-label rv">
+      <span class="sec-num">02</span>
+      <span class="sec-title">Positioning Brief</span>
+    </div>
+
+    <!-- Buyer Matrix -->
+    <div class="buyer-grid rv">
+      <div class="btab on" onclick="swBuyer('sre',this)">
+        <div class="btab-role">ICP Champion</div>
+        <div class="btab-name">SRE / DevOps Engineer</div>
+        <div class="btab-hint">Builds the case internally</div>
+      </div>
+      <div class="btab" onclick="swBuyer('platform',this)">
+        <div class="btab-role">Power User</div>
+        <div class="btab-name">Platform Engineer</div>
+        <div class="btab-hint">Owns the observability stack</div>
+      </div>
+      <div class="btab" onclick="swBuyer('cto',this)">
+        <div class="btab-role">Economic Buyer</div>
+        <div class="btab-name">VP Eng / CTO</div>
+        <div class="btab-hint">Signs the contract</div>
+      </div>
+    </div>
+
+    <div class="buyer-out rv">
+      <div class="buyer-idle" id="buyer-idle">Select a persona above to see tailored positioning.</div>
+
+      <div class="buyer-content" id="bc-sre">
+        <span class="bc-role">SRE / DevOps Engineer &mdash; ICP Champion</span>
+        <div class="bc-hed">"I'm already on OpenTelemetry. I just need a backend that doesn't penalize me for using open standards."</div>
+        <div class="bc-body">
+          This is the person who's done the work: they've instrumented their services with OTel SDKs, they know what a collector is, and they're frustrated that Datadog's documentation still pushes their proprietary agent. They've read GitHub issues. They've seen the community discussion. They're technically capable of self-hosting SigNoz today.<br><br>
+          What they need from messaging isn't explanation, it's validation. They've already made the right call. SigNoz should be the brand that confirms it: <strong>"You chose OTel. We chose OTel. Let's skip the setup arguments and get to the good part."</strong><br><br>
+          The proof points that resonate here are technical specificity: ClickHouse-backed query performance, the OTel collector setup docs, Kafka monitoring through semantic conventions, and the MCP integration with tools like Cursor and Claude Code.
+        </div>
+      </div>
+
+      <div class="buyer-content" id="bc-platform">
+        <span class="bc-role">Platform Engineer &mdash; Power User</span>
+        <div class="bc-hed">"We're centralizing observability across 12 teams. I need something I can run at scale without it becoming my full-time job."</div>
+        <div class="bc-body">
+          The platform engineer is thinking about multi-tenancy, RBAC, ingestion pipelines, and the Kubernetes Helm chart setup. They're not evaluating SigNoz against Datadog on vibes, they're building a spreadsheet. They care about ClickHouse compression ratios, retention configuration, and whether self-hosted stays supportable six months from now.<br><br>
+          What they fear: picking something that becomes a maintenance burden or that the team abandons. What they need to see: <strong>active GitHub commits, a clear release cadence, Helm chart documentation that doesn't require three Slack messages to understand, and a community that answers questions.</strong><br><br>
+          The 6,000+ Slack community members and 25K+ stars aren't just vanity metrics for this persona. They're evidence of a project that won't quietly die.
+        </div>
+      </div>
+
+      <div class="buyer-content" id="bc-cto">
+        <span class="bc-role">VP Engineering / CTO &mdash; Economic Buyer</span>
+        <div class="bc-hed">"Our Datadog bill just hit $40K/month and I can't explain the line items. What are we actually buying here?"</div>
+        <div class="bc-body">
+          This buyer isn't in the Slack community. They got forwarded a link by someone on their team or they Googled "Datadog alternative" after seeing a Q2 invoice. They're not evaluating the ClickHouse query planner. They're evaluating risk: switching cost, reliability, and whether their team will actually use it.<br><br>
+          The message for this persona isn't "we're open source and cheap." It's <strong>"switching won't break your team's workflow, your existing OTel instrumentation is portable, and we can show you exactly what the cost looks like at your current data volume."</strong><br><br>
+          This buyer needs a migration calculator, a support SLA, SOC 2 Type II confirmation, and ideally a reference from a company at their scale. The "enterprise self-host" and bring-your-own-cloud options are particularly relevant here: they address both the cost question and the data residency concern.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;" class="rv">
+      <div class="audit-block">
+        <div class="audit-head">
+          <span class="audit-hed-title">Positioning Statement Proposal</span>
+          <span class="badge b-ok">New</span>
+        </div>
+        <div class="audit-row">
+          <div class="audit-cell"><strong>For the Technical Buyer</strong>SigNoz is the observability platform built for teams that took OpenTelemetry seriously before everyone else did. One backend for traces, logs, metrics, and LLM visibility. No proprietary agent. No per-host tax. No vendor holding your instrumentation hostage.</div>
+          <div class="audit-cell"><strong>For the Economic Buyer</strong>SigNoz gives your engineering team the same visibility as Datadog at a fraction of the cost, without rebuilding how they instrument. Usage-based pricing means your bill moves with your data, not your headcount. Self-hosted or cloud, the instrumentation stays yours either way.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 03: GTM ROADMAP ===== -->
+<section id="gtm">
+  <div class="wrap">
+    <div class="sec-label rv">
+      <span class="sec-num">03</span>
+      <span class="sec-title">GTM Brief</span>
+    </div>
+
+    <div class="brief-grid rv">
+      <div class="bcard accent full">
+        <span class="bcard-label">Core Thesis</span>
+        <h4>The observability market is repositioning around OTel. SigNoz is the only backend built natively for it. The GTM job is to make that visible before the incumbents close the narrative gap.</h4>
+        <p>Datadog and New Relic have billions in revenue and marketing budgets to say they support OpenTelemetry. The risk is that they drown out the distinction between "supports OTel" and "built OTel-native." SigNoz needs to win that distinction in the developer community before it gets muddy, and then use the community credibility to move up-market to platform teams and VP-level buyers.</p>
+      </div>
+
+      <div class="bcard">
+        <span class="bcard-label">ICP Priority</span>
+        <h4>DevOps and SRE teams at 50-500 person companies on Datadog</h4>
+        <p>Teams large enough to feel Datadog's pricing, small enough to not have a 6-month procurement cycle. Typically already using OTel or evaluating it. The champion is an engineer, the approver is an engineering manager or VP. <strong>Primary pain: unpredictable Datadog bills, custom metric pricing, and per-host charges during auto-scaling.</strong></p>
+      </div>
+
+      <div class="bcard">
+        <span class="bcard-label">Secondary ICP</span>
+        <h4>AI-native teams building LLM-powered products</h4>
+        <p>Teams running LangChain, LlamaIndex, or custom inference pipelines who need prompt tracing and token attribution alongside their service traces. They're often on two tools (an APM tool and an LLM-specific tool) and experiencing the pain of fragmented context when something breaks at 2am. <strong>SigNoz eliminates the context switch.</strong></p>
+      </div>
+
+      <div class="bcard">
+        <span class="bcard-label">Channel Priority</span>
+        <h4>Community-led, content-amplified</h4>
+        <p>The 25K GitHub stars are the starting asset. SigNoz already has developer trust. The GTM motion should convert that trust into pipeline: <strong>blog content that ranks for "[Competitor] alternative" and "OpenTelemetry [language] setup" queries, community activation in the 6K Slack, and a PLG motion where self-hosted users become cloud users become enterprise customers.</strong></p>
+      </div>
+
+      <div class="bcard">
+        <span class="bcard-label">Launch Priorities</span>
+        <h4>Three GTM motions to build in the first 90 days</h4>
+        <ul>
+          <li><strong>LLM observability landing page:</strong> Own the category before Datadog does. Write the definitive OTel-based LLM observability content. Position before the Chatwoot case study.</li>
+          <li><strong>Datadog migration calculator:</strong> Give the cost-evaluating buyer a tool. Show real numbers for real usage patterns. Own the "I just saw my Datadog bill" search intent.</li>
+          <li><strong>Platform Engineer content series:</strong> Multi-tenancy, RBAC, ClickHouse at scale. The platform engineer is an underserved persona in observability content. SigNoz can own that niche.</li>
+        </ul>
+      </div>
+
+      <div class="bcard">
+        <span class="bcard-label">Funnel Hypothesis</span>
+        <h4>Awareness to activation to expansion</h4>
+        <p>
+          <strong>Awareness:</strong> OTel content + competitor comparison pages + community (GitHub, Slack, HN)<br><br>
+          <strong>Trial:</strong> Self-hosted community edition or Cloud free tier. The 30-day unlimited access is a strong hook.<br><br>
+          <strong>Activation:</strong> First meaningful dashboard or alert set up. This is the PQL event to define and optimize toward.<br><br>
+          <strong>Expansion:</strong> Self-hosted teams moving to Cloud. Community users becoming enterprise customers. Platform engineers recommending org-wide adoption.
+        </p>
+      </div>
+    </div>
+
+    <!-- Phased GTM Roadmap -->
+    <div style="margin-top:36px;" class="rv">
+      <div class="sec-label" style="margin-bottom:20px;">
+        <span class="sec-num" style="font-size:9px;">ROADMAP</span>
+        <span class="sec-title">90-Day Launch Sequence</span>
+      </div>
+      <div class="progress-steps">
+        <div class="prog-step open" onclick="toggleStep(this)">
+          <div class="prog-step-head">
+            <div class="ps-left">
+              <span class="ps-num">01</span>
+              <span class="ps-title">Messaging Foundation (Days 1-30)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span class="ps-timeline">Month 1</span>
+              <span class="ps-chevron">&#8963;</span>
+            </div>
+          </div>
+          <div class="prog-step-body">
+            Audit and rewrite the positioning hierarchy on the homepage, the vs. Datadog comparison page, and the LLM observability page. Establish the OTel-native narrative as the primary differentiator rather than the alternative/cheaper narrative. Ship updated battle cards to sales and CE. Conduct 5-8 customer interviews to validate ICP segmentation and surface real switch-from-Datadog stories.
+            <ul>
+              <li><strong>Deliverable 1:</strong> Messaging hierarchy document with buyer-specific value props</li>
+              <li><strong>Deliverable 2:</strong> Homepage copy rewrite (collab with design/eng)</li>
+              <li><strong>Deliverable 3:</strong> First customer interview report shared with sales</li>
+            </ul>
+          </div>
+        </div>
+        <div class="prog-step" onclick="toggleStep(this)">
+          <div class="prog-step-head">
+            <div class="ps-left">
+              <span class="ps-num">02</span>
+              <span class="ps-title">Content and Competitive Assets (Days 31-60)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span class="ps-timeline">Month 2</span>
+              <span class="ps-chevron">&#8963;</span>
+            </div>
+          </div>
+          <div class="prog-step-body">
+            Build the content engine targeting high-intent search terms. Publish the LLM observability category content series (3-4 posts around OTel + LLM frameworks). Launch the Datadog cost comparison calculator as a standalone interactive page. Ship the first customer case study (Chatwoot LLM observability story or a Datadog migration story).
+            <ul>
+              <li><strong>Deliverable 1:</strong> LLM observability content series (first 3 posts)</li>
+              <li><strong>Deliverable 2:</strong> Interactive Datadog vs. SigNoz cost calculator page</li>
+              <li><strong>Deliverable 3:</strong> One published customer case study with real numbers</li>
+            </ul>
+          </div>
+        </div>
+        <div class="prog-step" onclick="toggleStep(this)">
+          <div class="prog-step-head">
+            <div class="ps-left">
+              <span class="ps-num">03</span>
+              <span class="ps-title">Sales Enablement and Funnel Optimization (Days 61-90)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span class="ps-timeline">Month 3</span>
+              <span class="ps-chevron">&#8963;</span>
+            </div>
+          </div>
+          <div class="prog-step-body">
+            Equip sales and CE with refined battle cards, objection-handling guides, and persona-specific one-pagers. Define MQL and PQL criteria in partnership with growth and product. Run first A/B experiments on trial signup copy and docs-to-product activation paths. Establish the win/loss analysis process and first feedback loop from field conversations to marketing output.
+            <ul>
+              <li><strong>Deliverable 1:</strong> Full sales enablement kit (battle cards, objection guide, persona one-pagers)</li>
+              <li><strong>Deliverable 2:</strong> MQL/PQL definition document aligned with product and growth</li>
+              <li><strong>Deliverable 3:</strong> First win/loss analysis report</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 04: BATTLE CARD ===== -->
+<section id="battlecard">
+  <div class="wrap">
+    <div class="sec-label rv">
+      <span class="sec-num">04</span>
+      <span class="sec-title">Competitive Battle Card</span>
+    </div>
+
+    <div class="battle-header rv">
+      <span class="battle-vs">SigNoz</span>
+      <span style="color:var(--t3);font-size:13px;">vs.</span>
+      <span class="battle-vs">Datadog</span>
+      <span style="color:var(--t3);font-size:13px;margin-left:4px;">&amp;</span>
+      <span class="battle-vs">New Relic</span>
+    </div>
+
+    <div class="battle-grid rv">
+      <div class="battle-card">
+        <span class="bc-vs-tag snz-color">Where SigNoz wins</span>
+        <div class="battle-row">
+          <div class="battle-item win">
+            <strong>OTel-native instrumentation</strong>
+            Datadog pushes its proprietary agent. OTel instrumentation docs are unclear in Datadog's ecosystem. SigNoz is built around OTel from day one: your traces, logs, and metrics follow open standards and stay portable.
+          </div>
+          <div class="battle-item win">
+            <strong>Pricing predictability</strong>
+            Datadog's custom metric pricing, per-host charges, and auto-scaling costs are a known pain point. SigNoz uses usage-based pricing: $0.30/GB for logs and traces, $0.10/million metric samples. No per-host penalty. No surprise bills during traffic spikes.
+          </div>
+          <div class="battle-item win">
+            <strong>LLM + infrastructure in one view</strong>
+            Datadog's LLM observability is an add-on. SigNoz correlates LLM traces with your existing service traces, so when a prompt-to-response latency spikes, you can see whether it's a model issue or a downstream infrastructure issue in the same view.
+          </div>
+          <div class="battle-item win">
+            <strong>Self-hosted option is first-class</strong>
+            Self-hosting SigNoz is documented, supported, and widely used. Many teams run community edition in dev and SigNoz Cloud in production. Privacy-sensitive teams (HIPAA, GDPR) use the enterprise self-hosted option with full data control.
+          </div>
+        </div>
+      </div>
+
+      <div class="battle-card">
+        <span class="bc-vs-tag comp-color">Where the incumbent pushes back</span>
+        <div class="battle-row">
+          <div class="battle-item lose">
+            <strong>"Datadog has 700+ integrations"</strong>
+            True. SigNoz supports 50+ sources via OTel, which covers the vast majority of what modern engineering teams actually use. The question to redirect to: "Which integrations matter for your stack specifically?" Usually the list is short.
+          </div>
+          <div class="battle-item lose">
+            <strong>"New Relic has AI-powered insights"</strong>
+            Redirect: "We'd rather help you understand your system than have AI interpret it for you. SigNoz shows you the data, you make the call. For teams who want to write their own dashboards and alerts, that's a feature, not a bug."
+          </div>
+          <div class="battle-item lose">
+            <strong>"What happens if SigNoz goes away?"</strong>
+            This is a real concern. Address it head-on: open-source AGPL license means the code is always available. 25K+ stars means community continuity. And because your instrumentation is OTel-based, you can point it at any OTel-compatible backend with a config change. The vendor risk is lower than it looks.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Talk Track -->
+    <div class="battle-talk rv">
+      <span class="bt-label">Talk Track: When the prospect is mid-Datadog evaluation</span>
+      <div class="bt-scenario">Scenario: "We're already deep into a Datadog trial. The team likes it. Switching now feels painful."</div>
+      <div class="bt-response">
+        Don't fight the trial. Ask one question: "Is the team using Datadog's agent or OpenTelemetry for instrumentation?" If it's the Datadog agent, you're at a fork in the road that only gets harder later. If it's OTel, point it at a SigNoz Cloud instance in an afternoon. The trial doesn't have to end, it just has to share data for a week.<br><br>
+        <strong>The thing most teams discover in that week:</strong> the SigNoz UI for correlated traces and logs is faster for the debugging workflow they actually do all day. The feature matrix looks similar. The pricing math looks very different.
+      </div>
+      <div class="bt-response">
+        If they're committed to Datadog because of specific features, name them and know the answers. Kubernetes monitoring, APM service maps, alerting, custom dashboards: SigNoz has all of these. The gaps worth knowing: Datadog's AI capabilities and some of the more niche integrations are deeper. The honest answer is that for teams with a standard cloud-native stack, the feature overlap is high and the price difference is real.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 05: COPY EXAMPLES ===== -->
+<section id="copy">
+  <div class="wrap">
+    <div class="sec-label rv">
+      <span class="sec-num">05</span>
+      <span class="sec-title">Copy Examples</span>
+    </div>
+
+    <div class="copy-block rv">
+      <div class="copy-top">
+        <span class="copy-ch">Homepage / Hero Section</span>
+        <div style="display:flex;gap:6px;">
+          <span class="badge b-ok">OTel-native angle</span>
+          <span class="badge b-fix">Full-stack</span>
+        </div>
+      </div>
+      <div class="copy-body">
+        <div class="copy-hed">Your instrumentation shouldn't be a hostage situation.</div>
+        <div class="copy-txt">Most observability vendors let you use OpenTelemetry. SigNoz is built for it. One backend for logs, metrics, traces, and LLM visibility, connected to the open standard your team actually owns. Self-hosted or cloud. Usage-based pricing. No per-host surprises when traffic spikes.</div>
+        <div class="copy-txt" style="font-size:13px;color:var(--t3);">CTAs: "Start for free" &nbsp;&bull;&nbsp; "Compare to Datadog"</div>
+        <div class="copy-why"><strong>Why this works:</strong> "Hostage situation" is blunt and resonates immediately with anyone who's tried to migrate away from a proprietary agent. The OTel framing positions SigNoz as the mature, forward-looking choice rather than the cheaper option. Two CTA paths address two different buyers landing on the same page: the developer who wants to try it, and the manager comparing costs.</div>
+      </div>
+    </div>
+
+    <div class="copy-block rv">
+      <div class="copy-top">
+        <span class="copy-ch">LLM Observability Landing Page / Hero</span>
+        <span class="badge b-miss">Category-defining</span>
+      </div>
+      <div class="copy-body">
+        <div class="copy-hed">Your LLM isn't separate from your infrastructure. Neither should your observability be.</div>
+        <div class="copy-txt">Token-level tracing and per-model cost attribution, right next to your service traces and database queries. When a prompt-to-response latency spikes, SigNoz tells you whether the bottleneck is the model, the retrieval pipeline, or the service behind it. All of it in one view. All of it through OpenTelemetry.</div>
+        <div class="copy-why"><strong>Why this works:</strong> The insight here is that most LLM observability tools are isolated from the broader infrastructure context. SigNoz's actual differentiator is the correlation. Leading with "your LLM isn't separate from your infrastructure" states the problem before the solution, which is how good product marketing copy works. The "one view, one standard" close is a callback to the OTel positioning and reinforces the platform story.</div>
+      </div>
+    </div>
+
+    <div class="copy-block rv">
+      <div class="copy-top">
+        <span class="copy-ch">Datadog Migration Email / Outbound</span>
+        <span class="badge b-opp">Sales enablement</span>
+      </div>
+      <div class="copy-body">
+        <div class="copy-hed">Subject: What your Datadog bill looks like at 50GB/day</div>
+        <div class="copy-txt">Hi [Name],<br><br>Dropped you a note because your team is listed as an OTel contributor and I wanted to share something relevant. We ran the numbers on a team sending 50GB of logs and traces per day with 30 hosts and 2M spans. On Datadog's current pricing, that comes to roughly $X/month. On SigNoz Cloud, it's $Y. Same instrumentation, nothing to rewrite.<br><br>Happy to share the full cost model or set up a 20-minute call if you're evaluating options. Either way, you can also spin up SigNoz Cloud and point your existing OTel collectors at it this afternoon if you want to run both in parallel.</div>
+        <div class="copy-why"><strong>Why this works:</strong> Starts with a credibility signal (OTel contribution) that shows this isn't a cold blast. Leads with a specific number, not a vague "could save you money" claim. The parallel-run suggestion removes the perceived switching cost almost entirely. The tone is peer-to-peer, not vendor pitch. Note: X and Y should be verified numbers before sending. Suggested pricing scenario should be reviewed against current SigNoz and Datadog pricing.</div>
+      </div>
+    </div>
+
+    <div class="copy-block rv">
+      <div class="copy-top">
+        <span class="copy-ch">Platform Engineer Content / Blog Intro</span>
+        <span class="badge b-fix">SEO + conversion</span>
+      </div>
+      <div class="copy-body">
+        <div class="copy-hed">Running SigNoz for 12 teams: what we learned about multi-tenancy, RBAC, and ClickHouse at 3TB/month</div>
+        <div class="copy-txt">This isn't a getting-started tutorial. If you're landing here, you've already deployed SigNoz for one team and someone just asked you to roll it out to the rest of engineering. This is for that conversation: the one where you have to explain retention configuration to three different teams with three different data budgets, manage RBAC so Platform doesn't have read access to Security's traces, and keep ClickHouse humming at a data volume that surprises you the first time you see it.</div>
+        <div class="copy-why"><strong>Why this works:</strong> Opens by acknowledging the reader's situation rather than reintroducing the product. "If you're landing here, you've already..." immediately signals that this is not for beginners, which is exactly what a platform engineer wants to see before investing 10 minutes in an article. The specific details (RBAC, ClickHouse, data budgets) confirm that the writer knows the domain. This is the kind of content that earns bookmarks and Slack shares.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== 06: OTHER WORK ===== -->
+<section id="work" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="sec-label rv">
+      <span class="sec-num">06</span>
+      <span class="sec-title">Other Relevant Work</span>
+    </div>
+
+    <div class="wgrid rv">
+      <a class="wcard" href="https://bhanuexcalibur.github.io/Canonical/" target="_blank" rel="noopener">
+        <span class="wcard-tag">Full PoW &nbsp;&bull;&nbsp; Developer infra / Open Source</span>
+        <h4>Canonical</h4>
+        <p>Positioning audit, GTM brief, and multi-buyer copy for Canonical's Ubuntu Core and Ubuntu Pro. Same structural challenge as SigNoz: a technically credible open-source product with a developer community on one side and an enterprise economic buyer on the other. The core messaging problem is identical.</p>
+        <span class="wcard-arr">&rarr;</span>
+      </a>
+
+      <a class="wcard" href="https://bhanuexcalibur.github.io/Continuous/" target="_blank" rel="noopener">
+        <span class="wcard-tag">Full PoW &nbsp;&bull;&nbsp; Developer tools / PLG</span>
+        <h4>Continuous</h4>
+        <p>Full PoW for a developer-facing product with both a PLG self-serve motion and an enterprise sales overlay. The core challenge of splitting messaging between a technical champion and a business buyer decision-maker mirrors what SigNoz navigates across SRE, platform engineer, and VP Engineering audiences.</p>
+        <span class="wcard-arr">&rarr;</span>
+      </a>
+
+      <a class="wcard" href="https://bhanuexcalibur.github.io/Boundless-PoW/" target="_blank" rel="noopener">
+        <span class="wcard-tag">Messaging audit &nbsp;&bull;&nbsp; Technical B2B</span>
+        <h4>Boundless</h4>
+        <p>Three-buyer messaging rewrite for a compliance infrastructure product. One technical product, multiple buyer personas who each need a completely different frame. The methodology used here for buyer segmentation maps directly to the SRE vs. platform engineer vs. VP Engineering split.</p>
+        <span class="wcard-arr">&rarr;</span>
+      </a>
+
+      <a class="wcard" href="https://bhanuexcalibur.github.io/Stripe/" target="_blank" rel="noopener">
+        <span class="wcard-tag">Full PoW &nbsp;&bull;&nbsp; Infrastructure / Developer-first</span>
+        <h4>Stripe</h4>
+        <p>Pricing narrative audit, GTM brief, and segment copy for Stripe. Developer infrastructure with an enterprise overlay and complex pricing that creates buyer confusion, the same tension SigNoz navigates between community edition, cloud pricing, and enterprise self-host. Competitive framing approach is directly applicable.</p>
+        <span class="wcard-arr">&rarr;</span>
+      </a>
+
+      <a class="wcard" href="https://bhanuexcalibur.github.io/Cohere/" target="_blank" rel="noopener noreferrer">
+        <span class="wcard-tag">Full PoW &nbsp;&bull;&nbsp; AI infrastructure</span>
+        <h4>Cohere</h4>
+        <p>Positioning and messaging for an AI infrastructure product with a developer ICP and an enterprise security buyer. Directly relevant because SigNoz's LLM observability positioning faces the same dual audience: the developer building the LLM app and the VP Engineering approving the toolchain. Persona-switching copy format used here.</p>
+        <span class="wcard-arr">&rarr;</span>
+      </a>
+
+      <a class="wcard" href="https://bhanuexcalibur.github.io/RelayFi_PoW/" target="_blank" rel="noopener">
+        <span class="wcard-tag">Full PoW &nbsp;&bull;&nbsp; PLG + Sales motion</span>
+        <h4>Relay Financial</h4>
+        <p>Full product marketing PoW covering messaging audit, GTM brief, persona mapping, and copy across multiple buyer types. Relevant for scope and format: shows how I handle end-to-end PMM work from market framing through individual copy assets and competitive positioning in one coherent document.</p>
+        <span class="wcard-arr">&rarr;</span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- SIGNATURE -->
+<div class="wrap">
+  <div class="sig">
+    <div>
+      <div class="sig-name">Bhanu <span>Kumar</span></div>
+      <div class="sig-links">
+        <a href="mailto:bhanukumar0902@gmail.com">bhanukumar0902@gmail.com</a><br>
+        <a href="https://linkedin.com/in/bhanuexcalibur" target="_blank" rel="noopener">linkedin.com/in/bhanuexcalibur</a>
+        &nbsp;&bull;&nbsp;
+        <a href="https://x.com/excaliburbhanu" target="_blank" rel="noopener">@excaliburbhanu</a>
+      </div>
+    </div>
+    <div class="sig-btns">
+      <a class="sbtn pri" href="mailto:bhanukumar0902@gmail.com">
+        Get in touch
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7.5 3.5l3 3-3 3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="sbtn ghost" href="https://drive.google.com/file/d/1WIHmYB_4rPQ_GI-2WU2h23w95ZmkESAL/view" target="_blank" rel="noopener">Full resume &rarr;</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* === NAV TOGGLE === */
+function toggleMob(){
+  document.getElementById('hbg').classList.toggle('open');
+  document.getElementById('mobm').classList.toggle('open');
+}
+function closeMob(){
+  document.getElementById('hbg').classList.remove('open');
+  document.getElementById('mobm').classList.remove('open');
+}
+
+/* === AUDIT TABS === */
+function swAudit(id,btn){
+  document.querySelectorAll('.apanel').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.atab').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('ap-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+/* === BUYER PERSONA SWITCH === */
+var buyers={
+  sre:  'bc-sre',
+  platform: 'bc-platform',
+  cto:  'bc-cto'
+};
+function swBuyer(type,card){
+  document.querySelectorAll('.btab').forEach(function(c){c.classList.remove('on');});
+  card.classList.add('on');
+  document.getElementById('buyer-idle').style.display='none';
+  Object.values(buyers).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el){el.classList.remove('on');el.style.display='none';}
+  });
+  var target=document.getElementById(buyers[type]);
+  if(target){
+    target.style.display='block';
+    target.style.opacity='0';
+    target.style.transform='translateY(8px)';
+    target.style.transition='opacity 0.24s ease,transform 0.24s ease';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        target.style.opacity='1';
+        target.style.transform='translateY(0)';
+        target.classList.add('on');
+      });
+    });
+  }
+}
+
+/* === ACCORDION STEPS === */
+function toggleStep(step){
+  var isOpen=step.classList.contains('open');
+  document.querySelectorAll('.prog-step').forEach(function(s){s.classList.remove('open');});
+  if(!isOpen){step.classList.add('open');}
+}
+
+/* === SCROLL REVEAL === */
+if('IntersectionObserver' in window){
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);}
+    });
+  },{threshold:0.04,rootMargin:'0px 0px -6px 0px'});
+  document.querySelectorAll('.rv').forEach(function(el){obs.observe(el);});
+}else{
+  document.querySelectorAll('.rv').forEach(function(el){el.classList.add('in');});
+}
+window.addEventListener('load',function(){
+  document.querySelectorAll('.rv').forEach(function(el){
+    var r=el.getBoundingClientRect();
+    if(r.top<window.innerHeight-20){el.classList.add('in');}
+  });
+});
+
+/* === ACTIVE NAV LINK ON SCROLL === */
+var sections=document.querySelectorAll('section[id]');
+var navLinks=document.querySelectorAll('.nav-links .np');
+window.addEventListener('scroll',function(){
+  var scrollY=window.pageYOffset;
+  sections.forEach(function(s){
+    var top=s.offsetTop-80;
+    var bottom=top+s.offsetHeight;
+    var id=s.getAttribute('id');
+    if(scrollY>=top&&scrollY<bottom){
+      navLinks.forEach(function(l){
+        l.classList.remove('active');
+        if(l.getAttribute('href')==='#'+id){l.classList.add('active');}
+      });
+    }
+  });
+});
+</script>
+</body>
+</html>
